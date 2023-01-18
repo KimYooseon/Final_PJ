@@ -306,8 +306,11 @@ void MainServer::receiveData()
             QString sendWaitData = event + "<CR>" + id + "<CR>" + data.split("|")[0];
             qDebug("%d", __LINE__);
             //이거 고치기 socket->write(sendWaitData.toStdString().c_str());
-            viewerSocket->write(sendWaitData.toStdString().c_str());
-            qDebug("%d", __LINE__);
+
+
+            //**********여기는 뷰어SW가 켜져있을 때 다시 주석 풀기************
+            //viewerSocket->write(sendWaitData.toStdString().c_str());
+
         }
         
         /*촬영 SW 이벤트*/
@@ -330,24 +333,24 @@ void MainServer::receiveData()
                 for(int i = 1; i<4 ; i++)
                 {
                     qDebug("%d", __LINE__);
-//                    if(i == 0)
-//                    {
-//                        qDebug("%d", __LINE__);
-//                        qDebug() << "i: " << i << "data: " << query->value(i).toString();
-//                        QString data = query->value(i).toString() + "<CR>";
-//                        sendData += data;
-//                        qDebug() << "sendData: " << sendData;
-//                        qDebug("%d", __LINE__);
-//                    }
-//                    else
-//                    {
-                        qDebug("%d", __LINE__);
-                        qDebug() << "i: " << i << "data: " << query->value(i).toString();
-                        QString data = query->value(i).toString() + "|";
-                        sendData += data;
-                        qDebug() << "sendData: " << sendData;
-                        qDebug("%d", __LINE__);
-//                    }
+                    //                    if(i == 0)
+                    //                    {
+                    //                        qDebug("%d", __LINE__);
+                    //                        qDebug() << "i: " << i << "data: " << query->value(i).toString();
+                    //                        QString data = query->value(i).toString() + "<CR>";
+                    //                        sendData += data;
+                    //                        qDebug() << "sendData: " << sendData;
+                    //                        qDebug("%d", __LINE__);
+                    //                    }
+                    //                    else
+                    //                    {
+                    qDebug("%d", __LINE__);
+                    qDebug() << "i: " << i << "data: " << query->value(i).toString();
+                    QString data = query->value(i).toString() + "|";
+                    sendData += data;
+                    qDebug() << "sendData: " << sendData;
+                    qDebug("%d", __LINE__);
+                    //                    }
                 }
 
 
@@ -377,6 +380,39 @@ void MainServer::receiveData()
             //[받을 정보: 이벤트, pid / 보낼 정보: 이벤트, pid, 이름, 성별, 생년월일, 메모]
         {
             
+            QString sendData ="VTS<CR>";
+            sendData = sendData + id + "<CR>";
+            qDebug("%d", __LINE__);
+
+            query->exec("select * from patient where patient_no = '" + id + "'");
+            qDebug("%d", __LINE__);
+            QSqlRecord rec = query->record();
+            qDebug("%d", __LINE__);
+            qDebug() << "Number of columns: " << rec.count();
+
+            //와일문보기
+            while (query->next()){
+                qDebug("%d", __LINE__);
+                for(int i = 1; i<4 ; i++)
+                {
+                    qDebug() << "i: " << i << "data: " << query->value(i).toString();
+                    QString data = query->value(i).toString() + "|";
+                    sendData += data;
+                    qDebug() << "sendData: " << sendData;
+                    qDebug("%d", __LINE__);
+                    //
+                }
+                sendData += query->value(6).toString();
+
+                //                qDebug() << query->value(0).toString(); // output all names
+                //                QString data = query->value(0).toString() + "<CR>";
+                //                sendData += data;
+                //                qDebug() << "sendData: " << sendData;
+            }
+            //qDebug() << sendData << "sfdffsdsf";
+            qDebug() << "sendData: " << sendData;
+            viewerSocket->write(sendData.toStdString().c_str());
+
         }
         else if(event == "VTF")     //진료 완료: VTF(treatment finish) [받을 정보: 이벤트, pid / 보낼 정보: 이벤트, pid]
         {
