@@ -54,7 +54,7 @@ void PatientInfoManager::on_searchPushButton_clicked()
     qDebug()<< searchInfo;
     QString searchData = "PSE<CR>" + QString::number(comboBoxIndex) + "<CR>" + searchInfo;
 
-    ui->clientInfoTableWidget->setEditTriggers(QAbstractItemView::DoubleClicked);
+    ui->clientInfoTableWidget->setEditTriggers(QAbstractItemView::DoubleClicked);   //검색하면 테이블 정보들 더블클릭해서 수정가능하도록 만듦
     qDebug() <<"searchData: " << searchData;
     emit sendSearchData(searchData);
 }

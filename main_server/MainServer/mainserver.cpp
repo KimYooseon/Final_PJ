@@ -20,7 +20,7 @@ MainServer::MainServer(QWidget *parent) :
     QTcpSocket* socket = (QTcpSocket*)(sender());
     connect(server, SIGNAL(newConnection()), this, SLOT(newConnection()));
     
-    QString socket_data = QString("Listening: %1\n").arg(server->listen(QHostAddress::Any, 8001) ? "true" : "false");
+    QString socket_data = QString("Listening: %1\n").arg(server->listen(QHostAddress::Any, 8000) ? "true" : "false");
     ui->textEdit->append(socket_data);
     
     this->loadData();
@@ -101,8 +101,6 @@ void MainServer::sendDataToClient(QString newData)
 
 void MainServer::receiveData()
 {
-
-
     QTcpSocket* socket = (QTcpSocket*)(sender());
 
 
@@ -129,7 +127,7 @@ void MainServer::receiveData()
     qDebug() << "savedata: " << saveData;
     //qDebug() << "contain test : << "saveData.contains("<CR");
     
-    if(saveData.contains("<CR", Qt::CaseInsensitive) == true)
+    if(saveData.contains("<CR>", Qt::CaseInsensitive) == true)
     {
         
         //어떤 이벤트인지에 따라 불러올 함수 써주기(각각 이벤트에 대한 함수 만들고 if-else문 타도록 만들자)
@@ -145,18 +143,19 @@ void MainServer::receiveData()
             if(id == "PMS")
             {
                 sk.insert(pmsSocket, "PMS");
-                pmsSocket = (QTcpSocket*)(sender());
+                pmsSocket = dynamic_cast<QTcpSocket*>(sender());
                 qDebug() << "pmsSocket ready";
             }
             else if(id == "IMG")
             {
                 sk.insert(imagingSocket, "IMG");
+                imagingSocket = dynamic_cast<QTcpSocket*>(sender());
                 qDebug() << "imagingSocket ready";
             }
             else if(id == "VEW")
             {
                 sk.insert(viewerSocket, "VEW");
-                viewerSocket = (QTcpSocket*)(sender());
+                viewerSocket = dynamic_cast<QTcpSocket*>(sender());
                 qDebug() << "viewerSocket ready";
             }
         }
@@ -312,8 +311,55 @@ void MainServer::receiveData()
         }
         
         /*촬영 SW 이벤트*/
-        else if(event == "IPR")     //환자 준비: IPR(patient ready) [받는 정보: 이벤트, ID, 촬영 타입 / 보낼 정보: 이벤트, ID, 촬영 타입, 이름, 생년월일, 성별]
+        else if(event == "IPR")     //환자 준비: IPR(patient ready) [받는 정보: 이벤트, ID / 보낼 정보: 이벤트, ID, 이름, 생년월일, 성별]
         {
+            qDebug("%d", __LINE__);
+            QString sendData ="IPR<CR>";
+            sendData = sendData + id + "<CR>";
+            qDebug("%d", __LINE__);
+
+            query->exec("select * from patient where patient_no = '" + id + "'");
+            qDebug("%d", __LINE__);
+            QSqlRecord rec = query->record();
+            qDebug("%d", __LINE__);
+            qDebug() << "Number of columns: " << rec.count();
+
+            //와일문보기
+            while (query->next()){
+                qDebug("%d", __LINE__);
+                for(int i = 1; i<4 ; i++)
+                {
+                    qDebug("%d", __LINE__);
+//                    if(i == 0)
+//                    {
+//                        qDebug("%d", __LINE__);
+//                        qDebug() << "i: " << i << "data: " << query->value(i).toString();
+//                        QString data = query->value(i).toString() + "<CR>";
+//                        sendData += data;
+//                        qDebug() << "sendData: " << sendData;
+//                        qDebug("%d", __LINE__);
+//                    }
+//                    else
+//                    {
+                        qDebug("%d", __LINE__);
+                        qDebug() << "i: " << i << "data: " << query->value(i).toString();
+                        QString data = query->value(i).toString() + "|";
+                        sendData += data;
+                        qDebug() << "sendData: " << sendData;
+                        qDebug("%d", __LINE__);
+//                    }
+                }
+
+
+                //                qDebug() << query->value(0).toString(); // output all names
+                //                QString data = query->value(0).toString() + "<CR>";
+                //                sendData += data;
+                //                qDebug() << "sendData: " << sendData;
+            }
+            //qDebug() << sendData << "sfdffsdsf";
+            imagingSocket->write(sendData.toStdString().c_str());
+            //QString sendReadyData = event + "<CR>" + id + "<CR>" + name + birthdate + sex ;
+
             
         }
         else if(event == "ISV")     //저장 및 전송: ISV(save) [보낼 정보: ID, 촬영 타입, 이름, 생년월일, 성별]

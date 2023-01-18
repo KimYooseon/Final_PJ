@@ -29,7 +29,7 @@ NetworkManager::NetworkManager(QObject *parent)
 
 bool NetworkManager::connectToHost(QString host)
 {
-    socket->connectToHost(host, 8001);
+    socket->connectToHost(host, 8000);
     return socket->waitForConnected();
 }
 

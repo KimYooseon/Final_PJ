@@ -9,9 +9,9 @@ PatientStatusManager::PatientStatusManager(QWidget *parent) :
     ui->setupUi(this);
 
     QTreeWidgetItem* paymentRow = new QTreeWidgetItem;
-        ui->waitPaymentTreeWidget->addTopLevelItem(paymentRow);
-        paymentRow->setText(0, "P00001");
-        paymentRow->setText(1, "김유선");
+    ui->waitPaymentTreeWidget->addTopLevelItem(paymentRow);
+    paymentRow->setText(0, "P00001");
+    paymentRow->setText(1, "김유선");
 }
 
 PatientStatusManager::~PatientStatusManager()
@@ -38,13 +38,13 @@ void PatientStatusManager::waitInfoSended(QString waitInfoSended){
     name = data.split("|")[0];
 
     qDebug() << "pid, name: " << pid << ", " << name;
-qDebug("%d", __LINE__);
+    qDebug("%d", __LINE__);
     QTreeWidgetItem* row = new QTreeWidgetItem;
-        ui->waitTreatmentTreeWidget->addTopLevelItem(row);
-        row->setText(0, pid);
-        row->setText(1, name);
-        row->setText(2, "대기");
-        qDebug("%d", __LINE__);
+    ui->waitTreatmentTreeWidget->addTopLevelItem(row);
+    row->setText(0, pid);
+    row->setText(1, name);
+    row->setText(2, "대기중");
+    qDebug("%d", __LINE__);
 }
 
 //waitPaymentPID, waitPaymentName 전역변수로 만들어서 저장하고,
