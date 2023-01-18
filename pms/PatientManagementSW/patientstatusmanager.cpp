@@ -38,12 +38,13 @@ void PatientStatusManager::waitInfoSended(QString waitInfoSended){
     name = data.split("|")[0];
 
     qDebug() << "pid, name: " << pid << ", " << name;
-
+qDebug("%d", __LINE__);
     QTreeWidgetItem* row = new QTreeWidgetItem;
         ui->waitTreatmentTreeWidget->addTopLevelItem(row);
         row->setText(0, pid);
         row->setText(1, name);
         row->setText(2, "대기");
+        qDebug("%d", __LINE__);
 }
 
 //waitPaymentPID, waitPaymentName 전역변수로 만들어서 저장하고,

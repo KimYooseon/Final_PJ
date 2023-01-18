@@ -55,7 +55,7 @@ void PatientInfoManager::on_searchPushButton_clicked()
     QString searchData = "PSE<CR>" + QString::number(comboBoxIndex) + "<CR>" + searchInfo;
 
     ui->clientInfoTableWidget->setEditTriggers(QAbstractItemView::DoubleClicked);
-
+    qDebug() <<"searchData: " << searchData;
     emit sendSearchData(searchData);
 }
 
@@ -83,7 +83,7 @@ qDebug() << "name in searchDataSended: " << name;
     ui->clientInfoTableWidget->setItem(4, 0, new QTableWidgetItem(tel));
     ui->clientInfoTableWidget->setItem(5, 0, new QTableWidgetItem(address));
     ui->clientInfoTableWidget->setItem(6, 0, new QTableWidgetItem(memo));
-    qDebug("%d", __LINE__);
+
 
 
 
