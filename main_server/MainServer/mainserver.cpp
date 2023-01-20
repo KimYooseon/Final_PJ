@@ -413,13 +413,13 @@ void MainServer::receiveData()
 
 
             //@@@@@@@@이부분 미로오빠꺼 열리면 주석풀기@@@@@@@@@
-            //imagingSocket->write(sendData.toStdString().c_str());
+            imagingSocket->write(sendData.toStdString().c_str());
             //QString sendReadyData = event + "<CR>" + id + "<CR>" + name + birthdate + sex ;
 
             
         }
         //파일소켓으로는 자동으로 이미지가 전송되고 받아지고 할 거고 ISV는 파일이 서버로 보내졌다는 사실만을 알려주는 이벤트임
-        else if(event == "ISV")     //저장 및 전송: ISV(save) [받을 정보, 보낼 정보 동일: 환자 ID, 이름, 촬영 타입] - imaging module에서 클릭될 시에 다른 모듈에서는 진료대기로 바뀜
+        else if(event == "ISV")     //저장 및 전송: ISV(save) [받을 정보, 보낼 정보 동일: 이미지 No, 환자 ID, 이름, 촬영 타입] - imaging module에서 클릭될 시에 다른 모듈에서는 진료대기로 바뀜
         {
             qDebug() << "ISV's saveData: " << saveData;
             pmsSocket->write(saveData.toStdString().c_str());
@@ -430,7 +430,10 @@ void MainServer::receiveData()
         
         /*영상 뷰어 SW 이벤트*/
         else if(event == "VNT")     //처방전 작성: VNT (write note)
+            //받을 정보: VNT<CR>PID<CR>환자이름|의사번호|의사이름|진료날짜|진료내용(처방내용)
+            //보낼 정보: VNT<CR>PID<CR>진료차트 번호(이거는 내가 계산)|환자이름|의사번호|의사이름|진료날짜|진료내용(처방내용)
         {
+            qDebug()<< saveData;
 
         }
         else if(event == "VTS")     //진료 시작: VTS(treatment start)
@@ -474,7 +477,8 @@ void MainServer::receiveData()
         }
         else if(event == "VTF")     //진료 완료: VTF(treatment finish) [받을 정보: 이벤트, pid / 보낼 정보: 이벤트, pid]
         {
-            socket->write(saveData.toStdString().c_str()); //뷰어쪽에서 받은 정보 그대로 환자관리SW에 전송=>환자관리에서는 event가 VTS일 시에 환자 진료 상태 진료중으로 변경해주면 될 듯
+            saveData = saveData + "|";  //pms의 statusRequestSended함수에서 name에 해당하는 부분을 |로 나누어주기 때문에 필요한 부분
+            pmsSocket->write(saveData.toStdString().c_str()); //뷰어쪽에서 받은 정보 그대로 환자관리SW에 전송=>환자관리에서는 event가 VTS일 시에 환자 진료 상태 진료중으로 변경해주면 될 듯
         }
         
         /*촬영 요청 이벤트(환자SW/뷰어SW->촬영SW)*/
@@ -483,7 +487,7 @@ void MainServer::receiveData()
             qDebug() << "saveData: " << saveData;
 
             //미로오빠 소켓 주석
-            //imagingSocket->write(saveData.toStdString().c_str());
+            imagingSocket->write(saveData.toStdString().c_str());
 
             //정연이 소켓 주석/촬영요청이 pms에서 오든 viewer에서 오든 둘 다 촬영중으로 바뀌었다는 신호를 받아야 하기 때문에 SRQ이벤트를 서버쪽에서 다시 보내주도록 하였음
             pmsSocket->write(saveData.toStdString().c_str());

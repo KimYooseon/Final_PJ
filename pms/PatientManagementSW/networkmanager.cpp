@@ -119,6 +119,12 @@ void NetworkManager::receiveData()
             qDebug()<<"ISV event Received: " << saveData;
             emit sendISVevent(saveData);
         }
+        else if(event == "VTF")
+        {
+            qDebug()<<"VTF event Received: " << saveData;
+            emit sendVTFevent(saveData);
+        }
+
 
 
 

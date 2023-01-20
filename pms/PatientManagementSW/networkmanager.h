@@ -43,6 +43,8 @@ signals:
     void sendSRQRequest(QString);
     void sendVTSRequest(QString);
     void sendISVevent(QString);
+    void sendVTFevent(QString);
+
 
 };
 
