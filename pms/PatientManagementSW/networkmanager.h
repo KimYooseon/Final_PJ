@@ -19,8 +19,8 @@ private slots:
     void newDataSended(QString);
 
     void receiveData();
-    void newConnection();
-    void disconnected();
+//    void newConnection();
+//    void disconnected();
 
 private:
     QTcpSocket *socket;

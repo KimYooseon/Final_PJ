@@ -132,26 +132,26 @@ void NetworkManager::receiveData()
     }
 }
 
-void NetworkManager::newConnection()
-{
-    while (server->hasPendingConnections())
-    {
-        QTcpSocket *socket = server->nextPendingConnection();
-        connect(socket, SIGNAL(readyRead()), this, SLOT(receiveData()));
-        connect(socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
-        QByteArray *buffer = new QByteArray();
-        qint32 *s = new qint32(0);
-        buffers.insert(socket, buffer);
-        sizes.insert(socket, s);
-    }
-}
+//void NetworkManager::newConnection()
+//{
+//    while (server->hasPendingConnections())
+//    {
+//        QTcpSocket *socket = server->nextPendingConnection();
+//        connect(socket, SIGNAL(readyRead()), this, SLOT(receiveData()));
+//        connect(socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
+//        QByteArray *buffer = new QByteArray();
+//        qint32 *s = new qint32(0);
+//        buffers.insert(socket, buffer);
+//        sizes.insert(socket, s);
+//    }
+//}
 
-void NetworkManager::disconnected()
-{
-    QTcpSocket *socket = static_cast<QTcpSocket*>(sender());
-    QByteArray *buffer = buffers.value(socket);
-    qint32 *s = sizes.value(socket);
-    socket->deleteLater();
-    delete buffer;
-    delete s;
-}
+//void NetworkManager::disconnected()
+//{
+//    QTcpSocket *socket = static_cast<QTcpSocket*>(sender());
+//    QByteArray *buffer = buffers.value(socket);
+//    qint32 *s = sizes.value(socket);
+//    socket->deleteLater();
+//    delete buffer;
+//    delete s;
+//}
