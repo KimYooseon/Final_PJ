@@ -236,22 +236,26 @@ void MainServer::receiveData()
         {
             qDebug() << "savedata: " << saveData;
 
-
+            qDebug() << data;
             QString reportData ="<NEL>";
             query4->exec("select * from report WHERE patient_no = '"+data +"'");
             QSqlRecord reportRec =query4->record();
             qDebug()<<"Number of columns: "<<reportRec.count();
             qDebug() << "report value: " << query4->value(3);
 
+
             while(query4->next())
             {
                 for(int i=0;i<reportRec.count();i++)
                 {
-                    qDebug()<<"report i: "<<i <<"report data: "<<query4->value(i).toString();//output all names
-                    QString data=query4->value(i).toString()+"|";
-                    reportData +=data;
+                    //qDebug()<<"report i: "<<i <<"report data: "<<query4->value(i).toString();//output all names
+                    QString tmpData = query4->value(i).toString()+"|";
+                    reportData +=tmpData;
                     qDebug()<<"reportData : "<<reportData ;
+
                 }
+                query4->nextResult();
+                reportData += "<NEL>";
             }
 
 
@@ -275,22 +279,35 @@ void MainServer::receiveData()
                         qDebug() << "sendData: " << sendData;
                     }
                 }
-                
-                //            qDebug() << query->value(1).toString();
-                //            int patientNoCol = rec.indexOf("patient_no"); // index of the field "patient_no"
-                //            qDebug() << patientNoCol;
-                //            while (query->next())
-                //                qDebug() << query->value(patientNoCol).toString(); // output all names
-                
-                
-                //            query->exec("SELECT * FROM patient WHERE patient_no = '" + data + "'");
-                //            qDebug() << data;
-                
-                //            QSqlRecord rec = query->r
-                //            qDebug() << query->record();
+
+
+                QString reportData ="<NEL>";
+                query4->exec("select * from report WHERE patient_no = '"+data +"'");
+                QSqlRecord reportRec =query4->record();
+                qDebug()<<"Number of columns: "<<reportRec.count();
+                qDebug() << "report value: " << query4->value(3);
+
+
+                while(query4->next())
+                {
+                    for(int i=0;i<reportRec.count();i++)
+                    {
+                        //qDebug()<<"report i: "<<i <<"report data: "<<query4->value(i).toString();//output all names
+                        QString tmpData = query4->value(i).toString()+"|";
+                        reportData +=tmpData;
+                        qDebug()<<"reportData : "<<reportData ;
+
+                    }
+                    query4->nextResult();
+                    reportData += "<NEL>";
+                }
+
+                sendData += reportData;
+
             }
             else if(id == "1"){     //환자이름으로 검색했을 때
-                
+                QString pid;
+
                 query->exec("select * from patient WHERE patient_name = '" + data + "'");
                 QSqlRecord rec = query->record();
                 qDebug() << "Number of columns: " << rec.count();
@@ -301,9 +318,14 @@ void MainServer::receiveData()
                         if(i == 0)
                         {
                             qDebug() << "i: " << i << "data: " << query->value(i).toString();
-                            QString data = query->value(i).toString() + "<CR>";
+                            QString data = query->value(i).toString();
+                            pid = data; //pid만 저장해줌
+
+                            data += "<CR>"; //구분자 붙임
                             sendData += data;
                             qDebug() << "sendData: " << sendData;
+
+
                         }
                         else
                         {
@@ -312,36 +334,37 @@ void MainServer::receiveData()
                             sendData += data;
                             qDebug() << "sendData: " << sendData;
                         }
-                    }
-                    
-                    
-                    //                qDebug() << query->value(0).toString(); // output all names
-                    //                QString data = query->value(0).toString() + "<CR>";
-                    //                sendData += data;
-                    //                qDebug() << "sendData: " << sendData;
+                    }             
                 }
                 
-                //            while (query->next())
-                //            {
-                //                for(int i=1; i<rec.count() ; i++)
-                //                {
-                //                    qDebug() << "i: " << i << "data: " << query->value(i).toString(); // output all names
-                //                    QString data = query->value(i).toString() + "|";
-                //                    sendData += data;
-                //                    qDebug() << "sendData: " << sendData;
-                //                }
-                //            }
-                
-                //query->exec("SELECT * FROM patient WHERE patient_name = '" + data + "'");
+                qDebug()<<"pid: "<<pid;
+                QString reportData ="<NEL>";
+                query4->exec("select * from report WHERE patient_no = '"+ pid +"'");
+                QSqlRecord reportRec =query4->record();
+                qDebug()<<"Number of columns: "<<reportRec.count();
+                qDebug() << "report value: " << query4->value(3);
+
+
+                while(query4->next())
+                {
+                    for(int i=0;i<reportRec.count();i++)
+                    {
+                        //qDebug()<<"report i: "<<i <<"report data: "<<query4->value(i).toString();//output all names
+                        QString tmpData = query4->value(i).toString()+"|";
+                        reportData +=tmpData;
+                        qDebug()<<"reportData : "<<reportData ;
+
+                    }
+                    query4->nextResult();
+                    reportData += "<NEL>";
+                }
+                sendData += reportData;
+
             }
             
             // 이거 고치기 socket->write(sendData.toStdString().c_str());
-            qDebug() << "PSE's Info Data: " << sendData;
-
-
-
-            qDebug() << "PSE's Report List: " << reportData;
-
+//            qDebug() << "PSE's Info Data: " << sendData;
+//            qDebug() << "PSE's Report List: " << reportData;
 
             qDebug() << "PSE's sendData: " << sendData;
             pmsSocket->write(sendData.toStdString().c_str());
@@ -634,6 +657,15 @@ void MainServer::loadData()
         reportModel->setHeaderData(3, Qt::Horizontal, tr("Report Date"));
         reportModel->setHeaderData(4, Qt::Horizontal, tr("Report Note"));
         ui->reportTableView->setModel(reportModel);
+
+        /*임시로 데이터 넣어둔 것. 나중에 지워도 무관*/
+//        query4->exec("INSERT INTO report VALUES ('R00001', 'P00001', 'D00002', '2023-01-19', '19일 처방전')");
+//        query4->exec("INSERT INTO report VALUES ('R00002', 'P00001', 'D00002', '2023-01-20', '20일 처방전')");
+//        query4->exec("INSERT INTO report VALUES ('R00003', 'P00001', 'D00003', '2023-01-21', '21일 처방전')");
+//        reportModel->select();
+
+
+
         
         query5= new QSqlQuery(db);
         query5->exec("CREATE TABLE IF NOT EXISTS image_relation(report_no VARCHAR(10), image_no VARCHAR(10), CONSTRAINT relation Primary Key(report_no, image_no));");
@@ -705,11 +737,11 @@ QString MainServer::makeReportNo()
     if(reportModel->rowCount() == 0) {
         id = 1;
         qDebug()<< "it will return report rowCount: 1";
-        return "P" + QString::number(id).rightJustified(5,'0');
+        return "R" + QString::number(id).rightJustified(5,'0');
     } else {
         int tempReportNo= reportModel->itemData(reportModel->index(reportModel->rowCount() - 1,0)).value(0).toString().right(5).toInt()+1; //마지막 row의 pid+1 값을 리턴
         qDebug() << "report no is not 1, no: " << tempReportNo;
-        qDebug()<< "it will return rowCount: " << "R" + QString::number(tempReportNo).rightJustified(5,'0');
+        qDebug()<< "it will return report rowCount: " << "R" + QString::number(tempReportNo).rightJustified(5,'0');
 
         return "R" + QString::number(tempReportNo).rightJustified(5,'0');
     }
