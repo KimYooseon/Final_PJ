@@ -102,7 +102,8 @@ void NetworkManager::receiveData()
         }
         else if(event == "PSE")
         {
-            emit sendSearchResult(id, data);
+            qDebug() << "PSE data: " << data;
+            emit sendSearchResult(id, data);    //patientInfoManager 클래스와 medicalRecordManager 클래스 두 곳으로 모두 보내줘야 함
         }
         else if(event == "SRQ")
         {

@@ -50,6 +50,7 @@ public:
         QFont font1;
         font1.setPointSize(11);
         QTreeWidgetItem *__qtreewidgetitem = new QTreeWidgetItem();
+        __qtreewidgetitem->setFont(2, font1);
         __qtreewidgetitem->setFont(1, font1);
         __qtreewidgetitem->setFont(0, font1);
         recordTreeWidget->setHeaderItem(__qtreewidgetitem);
@@ -71,8 +72,9 @@ public:
         MedicalRecordManager->setWindowTitle(QCoreApplication::translate("MedicalRecordManager", "Form", nullptr));
         label_7->setText(QCoreApplication::translate("MedicalRecordManager", "\354\247\204\353\243\214 \352\270\260\353\241\235", nullptr));
         QTreeWidgetItem *___qtreewidgetitem = recordTreeWidget->headerItem();
-        ___qtreewidgetitem->setText(1, QCoreApplication::translate("MedicalRecordManager", "\353\213\264\353\213\271 \354\235\230\354\202\254", nullptr));
-        ___qtreewidgetitem->setText(0, QCoreApplication::translate("MedicalRecordManager", "\354\247\204\353\243\214 \353\202\240\354\247\234", nullptr));
+        ___qtreewidgetitem->setText(2, QCoreApplication::translate("MedicalRecordManager", "\353\213\264\353\213\271 \354\235\230\354\202\254", nullptr));
+        ___qtreewidgetitem->setText(1, QCoreApplication::translate("MedicalRecordManager", "\354\247\204\353\243\214 \353\202\240\354\247\234", nullptr));
+        ___qtreewidgetitem->setText(0, QCoreApplication::translate("MedicalRecordManager", "\354\260\250\355\212\270 \353\262\210\355\230\270", nullptr));
     } // retranslateUi
 
 };

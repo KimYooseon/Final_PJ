@@ -46,6 +46,8 @@ signals:
     void sendVTFevent(QString);
 
 
+
+
 };
 
 #endif // NETWORKMANAGER_H
