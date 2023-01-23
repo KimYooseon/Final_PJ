@@ -1,11 +1,15 @@
 #include "medicalrecordmanager.h"
 #include "ui_medicalrecordmanager.h"
 
+#include "medicalchart.h"
+
 MedicalRecordManager::MedicalRecordManager(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MedicalRecordManager)
 {
     ui->setupUi(this);
+
+    medicalChart = new MedicalChart(0);
 }
 
 MedicalRecordManager::~MedicalRecordManager()
@@ -39,7 +43,7 @@ void MedicalRecordManager::recordDataSended(QString sendedID, QString sendedData
         //QString patientID = rowData.split("|")[1];
         doctorID = rowData.split("|")[2];
         reportDate = rowData.split("|")[3];
-        //QString patientMemo = rowData.split("|")[4];
+        QString patientNote = rowData.split("|")[4];
         dentistName = rowData.split("|")[5];
 
 QTreeWidgetItem* row = new QTreeWidgetItem;
@@ -52,3 +56,10 @@ QTreeWidgetItem* row = new QTreeWidgetItem;
     }
 
 }
+
+void MedicalRecordManager::on_recordTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
+{
+    qDebug()<<"item: " << item <<"/ column: "<<column;
+    medicalChart->show();
+}
+
